@@ -1,0 +1,137 @@
+<div class="filters-wrapper">
+  <div class="row">
+    <div class="d-flex justify-content-between align-items-top">
+      <div class="col-md-4">
+        <div style="margin-top: 20px">
+          <span class="static-label text-uppercase">{{
+            "lblAdditionalAttributes"
+          }}</span>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <form
+          [formGroup]="additionalAttributeForm"
+          (ngSubmit)="submit()"
+          id="additionalAttributeForm"
+        >
+          <formly-form
+            [model]="additionalAttributeModel"
+            [form]="additionalAttributeForm"
+            [fields]="additionalAttributeFields"
+            [options]="options"
+          >
+          </formly-form>
+        </form>
+      </div>
+      <div class="col-md-4" style="text-align: right">
+        <div style="margin-top: 10px">
+          <button
+            mat-flat-button
+            color="orange"
+            class="text-uppercase"
+            form="additionalAttributeForm"
+            [ngClass]="{
+              'disabled-button':
+                isFormDisabled ||
+                !additionalAttributeForm.valid ||
+                isLineBeingEdited
+            }"
+            [disabled]="
+              isFormDisabled ||
+              isLineBeingEdited ||
+              !additionalAttributeForm.valid
+            "
+          >
+            <mat-icon>add</mat-icon>
+            {{ "btnAddAttribute" }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="table-wrapper">
+  <kendo-grid
+    [data]="dataList"
+    scrollable="none"
+    (edit)="editHandler($event)"
+    (cancel)="cancelHandler($event)"
+    (save)="saveHandler($event)"
+  >
+    <kendo-grid-column
+      field="Name"
+      title="{{ 'lblName' }}"
+      [width]="90"
+      editor="text"
+      [headerStyle]="{ 'vertical-align': 'middle' }"
+    >
+      <ng-template
+        kendoGridEditTemplate
+        let-column="column"
+        let-formGroup="formGroup"
+        let-isNew="isNew"
+      >
+        <kendo-textbox
+          [formControl]="formGroup.get(column.field)"
+        ></kendo-textbox>
+        <mat-error
+          *ngIf="
+            formGroup.get(column.field).invalid &&
+            !(isNew && formGroup.get(column.field).untouched)
+          "
+        >
+          Validation error with name
+        </mat-error>
+      </ng-template>
+    </kendo-grid-column>
+    <kendo-grid-column
+      field="Value"
+      title="{{ 'lblValue' }}"
+      [width]="120"
+      editor="text"
+      [headerStyle]="{ 'vertical-align': 'middle' }"
+    >
+    </kendo-grid-column>
+    <kendo-grid-column
+      title="{{ 'colActions' }}"
+      [width]="120"
+      [headerStyle]="{ 'vertical-align': 'middle' }"
+    >
+      <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+        <button
+          style="background-color: transparent; box-shadow: none; border: none"
+          kendoGridEditCommand
+          *ngIf="this.isEditButtonVisible"
+          [disabled]="isFormDisabled"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button
+          style="background-color: transparent; box-shadow: none; border: none"
+          kendoGridRemoveCommand
+          *ngIf="this.isRemoveButtonVisible"
+          (click)="deleteAttribute(rowIndex)"
+          [disabled]="isFormDisabled"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+        <button
+          style="background-color: transparent; box-shadow: none; border: none"
+          kendoGridCancelCommand
+          *ngIf="this.isCancelButtonVisible"
+          [disabled]="isFormDisabled"
+        >
+          <mat-icon [ngStyle]="{ color: 'red' }">close</mat-icon>
+        </button>
+        <button
+          style="background-color: transparent; box-shadow: none; border: none"
+          kendoGridSaveCommand
+          *ngIf="this.isSaveButtonVisible"
+          [disabled]="isFormDisabled"
+        >
+          <mat-icon [ngStyle]="{ color: 'green' }">done</mat-icon>
+        </button>
+      </ng-template>
+    </kendo-grid-column>
+  </kendo-grid>
+</div>
